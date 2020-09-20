@@ -1,20 +1,20 @@
-# shell-escape
+# shell-encode
 Escape Bash, PowerShell, CMD and mixed shell CLI commands
 
-![Node.js CI](https://github.com/diatche/shell-escape/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/diatche/shell-encode/workflows/Node.js%20CI/badge.svg)
 
 ## Installation
 
 With yarn:
 
 ```bash
-yarn add shell-escape
+yarn add shell-encode
 ```
 
 Or with npm:
 
 ```bash
-npm install --save shell-escape
+npm install --save shell-encode
 ```
 
 Has no dependencies.
@@ -24,15 +24,15 @@ Has no dependencies.
 ### Import:
 
 ```javascript
-const encode = require('shell-escape').encode;
+const encode = require('shell-encode').encode;
 // Or with spread operator assignment:
-const { encode } = require('shell-escape');
+const { encode } = require('shell-encode');
 ```
 
 ES6 syntax:
 
 ```javascript
-import { encode } from 'shell-escape';
+import { encode } from 'shell-encode';
 ```
 
 ### Basic Usage:
@@ -93,12 +93,12 @@ console.log(cmd);
 ### Changing the Default Shell
 
 ```javascript
-require('shell-escape').setDefaultShell('powershell');
+require('shell-encode').setDefaultShell('powershell');
 ```
 
 ES6 syntax:
 
 ```javascript
-import { setDefaultShell } from 'shell-escape';
+import { setDefaultShell } from 'shell-encode';
 setDefaultShell('powershell');
 ```
