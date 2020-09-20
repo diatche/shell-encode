@@ -91,5 +91,5 @@ console.log(cmd);
 ### Changing the Default Shell
 
 ```javascript
-shellEncode.setDefaultShell('powershell');
+shellEncode.setDefaults('powershell');
 ```

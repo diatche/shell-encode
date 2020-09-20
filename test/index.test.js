@@ -3,183 +3,226 @@ require("should");
 const shellEncode = require("..");
 
 describe("shellEncode", function () {
-    context("bash shell", function () {
-        let opts = {
-            shell: "bash",
-        };
+    describe("bash shell", function () {
+        describe('without expansion', function () {
+            let opts = {
+                shell: "bash",
+                expansion: false,
+            };
 
-        context("strings as arguments", function () {
-            it("should return the same strings joined with a space", function () {
-                shellEncode("foo", "bar", opts).should.equal("foo bar");
+            describe("strings as arguments", function () {
+                it("should return the same strings joined with a space", function () {
+                    shellEncode("foo", "bar", opts).should.equal("foo bar");
+                });
+            });
+
+            describe("string with quotes as arguments", function () {
+                it("should not escape quotes", function () {
+                    shellEncode('"foo"', opts).should.equal('"foo"');
+                });
+            });
+
+            describe("string in an array", function () {
+                it("should return the same string joined with a space and enclosed with quotes", function () {
+                    shellEncode(["foo", "bar"], opts).should.equal("'foo bar'");
+                });
+            });
+
+            describe("string with quotes in an array", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", '"bar wat"'], opts).should.equal(
+                        "'foo \"bar wat\"'"
+                    );
+                });
             });
         });
 
-        context("string with quotes as arguments", function () {
-            it("should not escape quotes", function () {
-                shellEncode('"foo"', opts).should.equal('"foo"');
+        describe('with expansion', function () {
+            let opts = {
+                shell: "bash",
+                expansion: true,
+            };
+
+            describe("strings as arguments", function () {
+                it("should return the same strings joined with a space", function () {
+                    shellEncode("foo", "bar", opts).should.equal("foo bar");
+                });
             });
-        });
 
-        context("string in an array", function () {
-            it("should return the same string joined with a space and enclosed with quotes", function () {
-                shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
+            describe("string with quotes as arguments", function () {
+                it("should not escape quotes", function () {
+                    shellEncode('"foo"', opts).should.equal('"foo"');
+                });
             });
-        });
 
-        context("string with quotes in an array", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", '"bar wat"'], opts).should.equal(
-                    '"foo \\"bar wat\\""'
-                );
+            describe("string in an array", function () {
+                it("should return the same string joined with a space and enclosed with quotes", function () {
+                    shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
+                });
             });
-        });
 
-        context("single nested array", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
-                    '"foo \\"bar wat\\""'
-                );
+            describe("string with quotes in an array", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", '"bar wat"'], opts).should.equal(
+                        '"foo \\"bar wat\\""'
+                    );
+                });
             });
-        });
 
-        context("mixed strings and array arguments", function () {
-            it("should enclose only array arguments", function () {
-                shellEncode("foo", ["bar", "wat"], opts).should.equal(
-                    'foo "bar wat"'
-                );
+            describe("single nested array", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
+                        '"foo \\"bar wat\\""'
+                    );
+                });
             });
-        });
 
-        context("single nested array with quotes", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ['bar "wat"']], opts).should.equal(
-                    '"foo \\"bar \\\\\\"wat\\\\\\"\\""'
-                );
+            describe("mixed strings and array arguments", function () {
+                it("should enclose only array arguments", function () {
+                    shellEncode("foo", ["bar", "wat"], opts).should.equal(
+                        'foo "bar wat"'
+                    );
+                });
             });
-        });
 
-        context("double nested arrays", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
-                    '"foo \\"bar \\\\\\"wat\\\\\\"\\""'
-                );
+            describe("single nested array with quotes", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ['bar "wat"']], opts).should.equal(
+                        '"foo \\"bar \\\\\\"wat\\\\\\"\\""'
+                    );
+                });
             });
-        });
 
-        context("triple nested arrays", function () {
-            it("should escape quotes", function () {
-                shellEncode(
-                    ["one", ["two", ["three", ["four"]]]],
-                    opts
-                ).should.equal(
-                    '"one \\"two \\\\\\"three \\\\\\\\\\\\\\"four\\\\\\\\\\\\\\"\\\\\\"\\""'
-                );
+            describe("double nested arrays", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
+                        '"foo \\"bar \\\\\\"wat\\\\\\"\\""'
+                    );
+                });
             });
-        });
 
-        context("double nested arrays with quotes", function () {
-            it("should escape quotes", function () {
-                shellEncode(
-                    ["one", ["two", ['three "four"']]],
-                    opts
-                ).should.equal(
-                    '"one \\"two \\\\\\"three \\\\\\\\\\\\\\"four\\\\\\\\\\\\\\"\\\\\\"\\""'
-                );
+            describe("triple nested arrays", function () {
+                it("should escape quotes", function () {
+                    shellEncode(
+                        ["one", ["two", ["three", ["four"]]]],
+                        opts
+                    ).should.equal(
+                        '"one \\"two \\\\\\"three \\\\\\\\\\\\\\"four\\\\\\\\\\\\\\"\\\\\\"\\""'
+                    );
+                });
             });
-        });
-    });
 
-    context("cmd shell", function () {
-        let opts = {
-            shell: "cmd",
-        };
-
-        context("strings as arguments", function () {
-            it("should return the same strings joined with a space", function () {
-                shellEncode("foo", "bar", opts).should.equal("foo bar");
-            });
-        });
-
-        context("string in an array", function () {
-            it("should return the same string joined with a space and enclosed with quotes", function () {
-                shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
-            });
-        });
-
-        context("mixed strings and array arguments", function () {
-            it("should enclose only array arguments", function () {
-                shellEncode("foo", ["bar", "wat"], opts).should.equal(
-                    'foo "bar wat"'
-                );
-            });
-        });
-
-        context("single nested array", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
-                    '"foo ""bar wat"""'
-                );
-            });
-        });
-
-        context("double nested arrays", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
-                    '"foo ""bar """"wat"""""""'
-                );
+            describe("double nested arrays with quotes", function () {
+                it("should escape quotes", function () {
+                    shellEncode(
+                        ["one", ["two", ['three "four"']]],
+                        opts
+                    ).should.equal(
+                        '"one \\"two \\\\\\"three \\\\\\\\\\\\\\"four\\\\\\\\\\\\\\"\\\\\\"\\""'
+                    );
+                });
             });
         });
     });
 
-    context("powershell shell", function () {
-        let opts = {
-            shell: "powershell",
-        };
+    describe("cmd shell", function () {
+        describe('without expansion', function () {
+            let opts = {
+                shell: "cmd",
+                expansion: false,
+            };
 
-        context("strings as arguments", function () {
-            it("should return the same strings joined with a space", function () {
-                shellEncode("foo", "bar", opts).should.equal("foo bar");
+            describe("strings as arguments", function () {
+                it("should return the same strings joined with a space", function () {
+                    shellEncode("foo", "bar", opts).should.equal("foo bar");
+                });
             });
-        });
 
-        context("string in an array", function () {
-            it("should return the same string joined with a space and enclosed with quotes", function () {
-                shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
+            describe("string in an array", function () {
+                it("should return the same string joined with a space and enclosed with quotes", function () {
+                    shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
+                });
             });
-        });
 
-        context("mixed strings and array arguments", function () {
-            it("should enclose only array arguments", function () {
-                shellEncode("foo", ["bar", "wat"], opts).should.equal(
-                    'foo "bar wat"'
-                );
+            describe("mixed strings and array arguments", function () {
+                it("should enclose only array arguments", function () {
+                    shellEncode("foo", ["bar", "wat"], opts).should.equal(
+                        'foo "bar wat"'
+                    );
+                });
             });
-        });
 
-        context("single nested array", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
-                    '"foo `"bar wat`""'
-                );
+            describe("single nested array", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
+                        '"foo ""bar wat"""'
+                    );
+                });
             });
-        });
 
-        context("double nested arrays", function () {
-            it("should escape quotes", function () {
-                shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
-                    '"foo `"bar \\`"wat\\`"`""'
-                );
+            describe("double nested arrays", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
+                        '"foo ""bar """"wat"""""""'
+                    );
+                });
             });
         });
     });
 
-    context("mixed shell", function () {
-        context("cmd to powershell", function () {
+    describe("powershell shell", function () {
+        describe('with expansion', function () {
+            let opts = {
+                shell: "powershell",
+                expansion: true,
+            };
+
+            describe("strings as arguments", function () {
+                it("should return the same strings joined with a space", function () {
+                    shellEncode("foo", "bar", opts).should.equal("foo bar");
+                });
+            });
+
+            describe("string in an array", function () {
+                it("should return the same string joined with a space and enclosed with quotes", function () {
+                    shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
+                });
+            });
+
+            describe("mixed strings and array arguments", function () {
+                it("should enclose only array arguments", function () {
+                    shellEncode("foo", ["bar", "wat"], opts).should.equal(
+                        'foo "bar wat"'
+                    );
+                });
+            });
+
+            describe("single nested array", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
+                        '"foo `"bar wat`""'
+                    );
+                });
+            });
+
+            describe("double nested arrays", function () {
+                it("should escape quotes", function () {
+                    shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
+                        '"foo `"bar \\`"wat\\`"`""'
+                    );
+                });
+            });
+        });
+    });
+
+    describe("mixed shell", function () {
+        describe("cmd to powershell", function () {
             let cmdOpts = {
                 shell: "cmd",
             };
             let powershellOpts = {
                 shell: "powershell",
+                expansion: true,
             };
 
             it("should escape quotes", function () {
@@ -188,34 +231,37 @@ describe("shellEncode", function () {
                     ["Hello World!"],
                     powershellOpts
                 );
-                shellEncode("ps", [psCmd], cmdOpts).should.equal(
-                    'ps "Write-Output ""Hello World!"""'
+                shellEncode("powershell", [psCmd], cmdOpts).should.equal(
+                    'powershell "Write-Output ""Hello World!"""'
                 );
             });
         });
-        context("cmd to powershell with inline options", function () {
+        describe("cmd to powershell with inline options", function () {
             let cmdOpts = {
                 shell: "cmd",
             };
             let powershellOpts = {
                 shell: "powershell",
+                expansion: true,
             };
 
             it("should escape quotes", function () {
                 shellEncode(
-                    "ps",
+                    "powershell",
                     ["Write-Output", ["Hello World!"], powershellOpts],
                     cmdOpts
-                ).should.equal('ps "Write-Output ""Hello World!"""');
+                ).should.equal('powershell "Write-Output ""Hello World!"""');
             });
         });
 
-        context("bash to powershell", function () {
+        describe("bash to powershell", function () {
             let bashOpts = {
                 shell: "bash",
+                expansion: true,
             };
             let powershellOpts = {
                 shell: "powershell",
+                expansion: true,
             };
 
             it("should escape quotes", function () {
@@ -230,7 +276,7 @@ describe("shellEncode", function () {
             });
         });
 
-        // context("cmd to powershell to cmd", function () {
+        // describe("cmd to powershell to cmd", function () {
         //     let cmdOpts = {
         //         shell: "cmd",
         //     };
