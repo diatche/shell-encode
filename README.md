@@ -1,6 +1,8 @@
 # shell-escape
 Escape Bash, PowerShell, CMD and mixed shell CLI commands
 
+![Node.js CI](https://github.com/diatche/shell-escape/workflows/Node.js%20CI/badge.svg)
+
 ## Installation
 
 With yarn:
