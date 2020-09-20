@@ -1,5 +1,5 @@
 # shell-encode
-Escape Bash, PowerShell, CMD and mixed shell CLI commands
+Escape Bash, PowerShell, CMD and mixed shell CLI commands.
 
 ![Node.js CI](https://github.com/diatche/shell-encode/workflows/Node.js%20CI/badge.svg)
 
@@ -17,32 +17,30 @@ Or with npm:
 npm install --save shell-encode
 ```
 
-Has no dependencies.
+Has no dependencies. TypeScript types defined.
 
 ## Usage
 
 ### Import:
 
 ```javascript
-const encode = require('shell-encode').encode;
-// Or with spread operator assignment:
-const { encode } = require('shell-encode');
+const shellEncode = require('shell-encode');
 ```
 
 ES6 syntax:
 
 ```javascript
-import { encode } from 'shell-encode';
+import shellEncode from 'shell-encode';
 ```
 
 ### Basic Usage:
 
-The method `encode()`, encodes a CLI command specified as arguments.
+The method `shellEncode()`, encodes a CLI command specified as arguments.
 The result is ready to use as a CLI command for the specified shell.
 The default shell is bash, but can be [changed](#Changing-the-Default-Shell).
 
 ```javascript
-var cmd = encode('echo', ['Hello "World"!']);
+var cmd = shellEncode('echo', ['Hello "World"!']);
 console.log(cmd);
 // Output: echo "Hello \"World\"!"
 ```
@@ -52,7 +50,7 @@ To change the shell, add an options object as the last argument.
 For example:
 
 ```javascript
-var cmd = encode('echo', ['Hello "World"!'], { shell: 'cmd' });
+var cmd = shellEncode('echo', ['Hello "World"!'], { shell: 'cmd' });
 console.log(cmd);
 // Output: echo "Hello ""World""!"
 ```
@@ -67,7 +65,7 @@ For example:
 
 ```javascript
 // cmd.run with testscript2, which has its own arguments:
-var cmd = encode('cmd.run', ['./testscript2', ['arg1', 'arg2']]);
+var cmd = shellEncode('cmd.run', ['./testscript2', ['arg1', 'arg2']]);
 console.log(cmd);
 // Output: cmd.run "./testscript2 \"arg1 arg2\""
 ```
@@ -82,7 +80,7 @@ For example:
 
 ```javascript
 // Call PowerShell from within CMD:
-var cmd = encode(
+var cmd = shellEncode(
     'ps', [
         'Write-Output', ['Hello World!'], { shell: 'powershell' }
     ], { shell: 'cmd' });
@@ -93,12 +91,5 @@ console.log(cmd);
 ### Changing the Default Shell
 
 ```javascript
-require('shell-encode').setDefaultShell('powershell');
-```
-
-ES6 syntax:
-
-```javascript
-import { setDefaultShell } from 'shell-encode';
-setDefaultShell('powershell');
+shellEncode.setDefaultShell('powershell');
 ```

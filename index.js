@@ -23,20 +23,20 @@ function setDefaultShell(shell) {
  * to pass nested arguments. Cross-shell encoding is supported.
  * 
  * The following examples assume that bash is the default shell: 
- * 1. `encode('echo', ['Hello', 'World!'])` gives:
+ * 1. `shellEncode('echo', ['Hello', 'World!'])` gives:
  *    - `'echo "Hello World!"'`
  * 
  * Add an option object as the last argument or item of array
  * to set shell options. Note that different options can be nested.
  * 
  * For example: 
- * 1. `encode('ps', ['Write-Output', ['Hello', 'World!'], { shell: 'powershell' }], { shell: 'cmd' })` gives:
+ * 1. `shellEncode('ps', ['Write-Output', ['Hello', 'World!'], { shell: 'powershell' }], { shell: 'cmd' })` gives:
  *    - `'ps "Write-Output ""Hello World!"""'`
  * 
  * @param {string|string[]|{shell: 'bash'|'powershell'|'cmd'}} cmds 
  * @return {string} Encoded CLI command
  */
-function encode(...cmds) {
+function shellEncode(...cmds) {
     return _encode(cmds, {}, true);
 }
 
@@ -155,7 +155,9 @@ function _encode(cmds, options, skipOneLevel) {
     return escapedCmds;
 }
 
-module.exports = {
-    encode: encode,
-    setDefaultShell: setDefaultShell,
-};
+/**
+ * Sets the default shell.
+ * @param shell 
+ */
+shellEncode.setDefaultShell = setDefaultShell;
+module.exports = shellEncode;

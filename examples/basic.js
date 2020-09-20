@@ -1,4 +1,8 @@
-const { encode } = require('..');
+const shellEncode = require('..');
 
-var cmd = encode('echo', ['Hello "World"!']);
+var cmd = shellEncode('echo', ['Hello "World"!']);
+console.log(cmd);
+
+shellEncode.setDefaultShell('cmd');
+cmd = shellEncode('echo', ['Hello "World"!']);
 console.log(cmd);
