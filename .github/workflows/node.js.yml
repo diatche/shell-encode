@@ -25,11 +25,4 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: yarn
-    - run: yarn build
-    - name: Run unit tests and generate coverage report
-      run: yarn run coverage
-    - name: Archive code coverage results
-      uses: actions/upload-artifact@v1
-      with:
-        name: code-coverage-report
-        path: coverage
+    - run: yarn test
