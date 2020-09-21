@@ -5,10 +5,29 @@
 
 /**
  * Shell options.
+ * 
+ * ### Expansion
+ * 
+ * When `expansion` is `true`, uses double
+ * quote to allow expansion of special characters.
+ * Be careful to escape all special characters which
+ * you do not want to expand.
+ * 
+ * When `expansion` is `false`, uses single quotes
+ * to preserve literal meaning.
+ * 
+ * When `expansion` is `undefined`, uses single quotes,
+ * unless an invalid literal character is present, in
+ * which case double quote are used with special characters
+ * escaped.
+ * 
+ * ~~Note that the `expansion` flag is ignored for all non-leaf
+ * strings and is set to `undefined`.~~
+ * 
  * @typedef {{
  *     shell: ShellType,
  *     expansion?: boolean,
- * }} ShellOptions
+ * }} IShellOptions
  */
 
 /** @type ShellType[] */
@@ -18,7 +37,7 @@ const kInvalidBashSingleQuoteStrings = ["'"];
 
 /**
  * Default options;
- * @type ShellOptions
+ * @type IShellOptions
  **/
 var _defaults = {
     shell: "bash",
@@ -26,7 +45,7 @@ var _defaults = {
 
 /**
  * Sets the default shell options.
- * @param {ShellOptions} options
+ * @param {IShellOptions} options
  */
 function setDefaults(options) {
     options = options || {};
@@ -59,13 +78,14 @@ function setDefaults(options) {
  *    - `'echo "Hello World!"'`
  *
  * Add an option object as the last argument or item of array
- * to set shell options. Note that different options can be nested.
+ * to set shell options (see {@link IShellOptions}).
+ * Note that different options can be nested.
  *
  * For example:
  * 1. `shellEncode('ps', ['Write-Output', ['Hello', 'World!'], { shell: 'powershell' }], { shell: 'cmd' })` gives:
  *    - `'ps "Write-Output ""Hello World!"""'`
  *
- * @param {string|string[]|ShellOptions} cmds
+ * @param {string|string[]|IShellOptions} cmds
  * @return {string} Encoded CLI command
  */
 function shellEncode(...cmds) {
@@ -87,12 +107,19 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     var options = {
         ..._defaults,
         ...outerOptions,
-        ...inlineOptions,
     };
+    if (skipOneLevel) {
+        options = {
+            ...options,
+            ...inlineOptions,
+        };
+    }
+    inlineOptions = inlineOptions || {};
     var newCmds = cmds;
     var enclose = false;
+    var isLeaf = !(newCmds && newCmds instanceof Array);
 
-    if (newCmds && newCmds instanceof Array) {
+    if (!isLeaf) {
         var innerShell = options.shell;
         if (inlineOptions && inlineOptions.shell) {
             innerShell = inlineOptions.shell;
@@ -108,19 +135,20 @@ function _encode(cmds, outerOptions, skipOneLevel) {
                     break;
             }
         }
+        if (innerShell === options.shell) {
+            inlineOptions = {
+                ...options,
+                ...inlineOptions,
+                shell: innerShell,
+            };
+        }
 
         newCmds = newCmds
             .map((cmd) => {
                 if (!(typeof cmd === "object" && cmd instanceof Array)) {
                     return cmd;
                 }
-                var innerOptions = {
-                    shell: innerShell,
-                };
-                if (innerShell === options.shell) {
-                    innerOptions = { ...options };
-                }
-                return _encode(cmd, innerOptions);
+                return _encode(cmd, inlineOptions);
             })
             .join(" ");
 
@@ -138,10 +166,14 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     var stringsToEscape = [];
     var invalidStrings = [];
     var replacements = {};
+    var expansion = options.expansion;
+    // if (!isLeaf) {
+    //     // Prevent expansion of nested content
+    //     expansion = undefined;
+    // }
     switch (options.shell) {
         case "bash":
             // Reference: http://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Quoting
-            var expansion = options.expansion;
             var literal = !expansion;
             if (typeof expansion === 'undefined') {
                 // Prefer single quotes, but check
@@ -172,7 +204,7 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             break;
         case "cmd":
             // Reference: https://ss64.com/nt/syntax-esc.html
-            if (options.expansion) {
+            if (expansion) {
                 // TODO: Escape delimiters with ^
                 throw new Error("Expansion in CMD is not supported yet");
             }
@@ -184,7 +216,7 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             // References:
             // https://adamtheautomator.com/powershell-escape-double-quotes/
             // https://www.red-gate.com/simple-talk/sysadmin/powershell/when-to-quote-in-powershell/
-            if (options.expansion) {
+            if (expansion) {
                 encloseString = '"';
                 escapeString = "`";
                 stringsToEscape = ["`", '"'];

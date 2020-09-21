@@ -7,6 +7,21 @@ export const ShellType = 'bash' | 'powershell' | 'cmd';
 
 /**
  * Shell options.
+ * 
+ * ### Expansion
+ * 
+ * When `expansion` is `true`, uses double
+ * quote to allow expansion of special characters.
+ * Be careful to escape all special characters which
+ * you do not want to expand.
+ * 
+ * When `expansion` is `false`, uses single quotes
+ * to preserve literal meaning.
+ * 
+ * When `expansion` is `undefined`, uses single quotes,
+ * unless an invalid literal character is present, in
+ * which case double quote are used with special characters
+ * escaped.
  */
 export interface IShellOptions {
     shell: ShellType;
@@ -28,7 +43,8 @@ export interface IShellOptions {
  *    - `'echo "Hello World!"'`
  * 
  * Add an option object as the last argument or item of array
- * to set shell options. Note that different options can be nested.
+ * to set shell options (see {@link IShellOptions}).
+ * Note that different options can be nested.
  * 
  * For example: 
  * 1. `shellEncode('ps', ['Write-Output', ['Hello', 'World!'], { shell: 'powershell' }], { shell: 'cmd' })` gives:

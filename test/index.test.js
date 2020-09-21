@@ -266,12 +266,12 @@ describe("shellEncode", function () {
 
             it("should escape quotes", function () {
                 let powershellCmds = shellEncode(
-                    "ps",
-                    ["bar", ["wat"]],
+                    "powershell",
+                    ["Write-Output", ["Hello World"]],
                     powershellOpts
                 );
-                shellEncode(["b", [powershellCmds]], bashOpts).should.equal(
-                    '"b \\"ps \\\\\\"bar \\\\\\`\\\\\\"wat\\\\\\`\\\\\\"\\\\\\"\\""'
+                shellEncode('bash', '-c', [powershellCmds], bashOpts).should.equal(
+                    'bash -c "powershell \\"Write-Output `\\"Hello World`\\"\\""'
                 );
             });
         });
