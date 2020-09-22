@@ -14,15 +14,9 @@
  * you do not want to expand.
  * 
  * When `expansion` is `false`, uses single quotes
- * to preserve literal meaning.
- * 
- * When `expansion` is `undefined`, uses single quotes,
- * unless an invalid literal character is present, in
- * which case double quote are used with special characters
- * escaped.
- * 
- * ~~Note that the `expansion` flag is ignored for all non-leaf
- * strings and is set to `undefined`.~~
+ * to preserve literal meaning. If an invalid literal
+ * character is present, double quotes are used with
+ * special characters escaped.
  * 
  * @typedef {{
  *     shell: ShellType,
@@ -117,9 +111,8 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     inlineOptions = inlineOptions || {};
     var newCmds = cmds;
     var enclose = false;
-    var isLeaf = !(newCmds && newCmds instanceof Array);
 
-    if (!isLeaf) {
+    if (newCmds && newCmds instanceof Array) {
         var innerShell = options.shell;
         if (inlineOptions && inlineOptions.shell) {
             innerShell = inlineOptions.shell;
@@ -167,17 +160,12 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     var invalidStrings = [];
     var replacements = {};
     var expansion = options.expansion;
-    // if (!isLeaf) {
-    //     // Prevent expansion of nested content
-    //     expansion = undefined;
-    // }
     switch (options.shell) {
         case "bash":
             // Reference: http://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Quoting
             var literal = !expansion;
-            if (typeof expansion === 'undefined') {
-                // Prefer single quotes, but check
-                // if invalid strings are present.
+            if (!expansion) {
+                // Check if invalid strings are present.
                 for (let invalidString of kInvalidBashSingleQuoteStrings) {
                     if (newCmds.indexOf(invalidString) >= 0) {
                         // Invalid string found, use double quotes
@@ -219,6 +207,9 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             if (expansion) {
                 encloseString = '"';
                 escapeString = "`";
+                // TODO: When a region delimited by single quotes
+                // is found, only escape double quotes
+                // (and make no replacements?)
                 stringsToEscape = ["`", '"'];
                 replacements = {
                     '\\`"': '\\`"\\`"\\`"',

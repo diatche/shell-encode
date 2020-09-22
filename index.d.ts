@@ -16,12 +16,9 @@ export const ShellType = 'bash' | 'powershell' | 'cmd';
  * you do not want to expand.
  * 
  * When `expansion` is `false`, uses single quotes
- * to preserve literal meaning.
- * 
- * When `expansion` is `undefined`, uses single quotes,
- * unless an invalid literal character is present, in
- * which case double quote are used with special characters
- * escaped.
+ * to preserve literal meaning. If an invalid literal
+ * character is present, double quotes are used with
+ * special characters escaped.
  */
 export interface IShellOptions {
     shell: ShellType;
