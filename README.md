@@ -42,7 +42,7 @@ The default shell is bash, but can be [changed](#Changing-the-Default-Shell).
 ```javascript
 var cmd = shellEncode('echo', ['Hello "World"!']);
 console.log(cmd);
-// Output: echo "Hello \"World\"!"
+// Output: echo 'Hello "World"!'
 ```
 
 To change the shell, add an options object as the last argument.
@@ -67,7 +67,7 @@ For example:
 // cmd.run with testscript2, which has its own arguments:
 var cmd = shellEncode('cmd.run', ['./testscript2', ['arg1', 'arg2']]);
 console.log(cmd);
-// Output: cmd.run "./testscript2 \"arg1 arg2\""
+// Output: cmd.run "./testscript2 'arg1 arg2'"
 ```
 
 ### Cross-Shell Encoding
@@ -81,15 +81,17 @@ For example:
 ```javascript
 // Call PowerShell from within CMD:
 var cmd = shellEncode(
-    'ps', [
+    'powershell', [
         'Write-Output', ['Hello World!'], { shell: 'powershell' }
     ], { shell: 'cmd' });
 console.log(cmd);
-// Output: 'ps "Write-Output ""Hello World!"""'
+// Output: powershell "Write-Output 'Hello World!'"
 ```
 
 ### Changing the Default Shell
 
 ```javascript
-shellEncode.setDefaultShell('powershell');
+shellEncode.setDefaults('powershell');
 ```
+
+Also have a look at the [examples folder](examples/).

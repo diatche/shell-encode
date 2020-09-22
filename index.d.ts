@@ -1,6 +1,29 @@
 declare module 'shell-test';
 
+/**
+ * Shell type.
+ */
 export const ShellType = 'bash' | 'powershell' | 'cmd';
+
+/**
+ * Shell options.
+ * 
+ * ### Expansion
+ * 
+ * When `expansion` is `true`, uses double
+ * quote to allow expansion of special characters.
+ * Be careful to escape all special characters which
+ * you do not want to expand.
+ * 
+ * When `expansion` is `false`, uses single quotes
+ * to preserve literal meaning. If an invalid literal
+ * character is present, double quotes are used with
+ * special characters escaped.
+ */
+export interface IShellOptions {
+    shell: ShellType;
+    expansion?: boolean;
+}
 
 /**
  * Encodes a CLI command specified as arguments.
@@ -17,19 +40,20 @@ export const ShellType = 'bash' | 'powershell' | 'cmd';
  *    - `'echo "Hello World!"'`
  * 
  * Add an option object as the last argument or item of array
- * to set shell options. Note that different options can be nested.
+ * to set shell options (see {@link IShellOptions}).
+ * Note that different options can be nested.
  * 
  * For example: 
  * 1. `shellEncode('ps', ['Write-Output', ['Hello', 'World!'], { shell: 'powershell' }], { shell: 'cmd' })` gives:
  *    - `'ps "Write-Output ""Hello World!"""'`
  * 
- * @param {string|string[]|{shell: 'bash'|'powershell'|'cmd'}} cmds 
+ * @param {string|string[]|IShellOptions} cmds 
  * @return {string} Encoded CLI command
  */
-export default function shellEncode(...cmds: string | string[] | ShellType): string;
+export default function shellEncode(...cmds: string | string[] | IShellOptions): string;
 
 /**
- * Sets the default shell.
- * @param shell 
+ * Sets the default shell options.
+ * @param options 
  */
-export function setDefaultShell(shell: ShellType): void;
+export function setDefaults(options: IShellOptions): void;
