@@ -43,15 +43,14 @@ var _defaults = {
  */
 function setDefaults(options) {
     options = options || {};
-    var shell = options.shell;
-    if (!shell || typeof shell !== "string") {
+    if (!options.shell || typeof options.shell !== "string") {
         throw new Error("Invalid shell");
     }
-    shell = shell.toLowerCase();
-    if (kSupportedShells.indexOf(shell) < 0) {
+    options.shell = options.shell.toLowerCase();
+    if (kSupportedShells.indexOf(options.shell) < 0) {
         throw new Error("Invalid shell");
     }
-    _defaults = { shell: shell };
+    _defaults = { ...options };
     if (options.posix) {
         _defaults.posix = true;
     }
