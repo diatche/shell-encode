@@ -84,7 +84,7 @@ function spawn(cmd, options) {
 
     var result = childProcess.spawnSync(shell, cmd, options);
     applyUtils(result);
-    if (options.throw && result.clean.stderr) {
+    if (!options.noThrow && result.clean.stderr) {
         throw new Error(result.clean.stderr);
     }
     return result;
