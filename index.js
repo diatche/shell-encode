@@ -199,13 +199,23 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             break;
         case "cmd":
             // Reference: https://ss64.com/nt/syntax-esc.html
+            
+            // Avoid enclosing in quotes as this potentially
+            // adds quotes to the passed argument, which then
+            // need to be dequoted.
+            encloseString = '';
+            escapeString = '^';
+            stringsToEscape = [' ', ',', ';', '=', '\t', '\r\n', '\n'];
             if (!expansion) {
-                // TODO: Escape delimiters with ^
-                throw new Error("Escaping in CMD is not supported yet");
+                stringsToEscape = stringsToEscape.concat([
+                    '\\', '&', '<', '>', '^', '|',
+                    '(', ')'
+                ]);
+                replacements = {
+                    '%': '%%',
+                    '!': '^^!', // Escape delayed expansion
+                };
             }
-            encloseString = '"';
-            escapeString = '"';
-            stringsToEscape = ['"'];
             break;
         case "powershell":
             // References:
