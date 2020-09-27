@@ -135,10 +135,10 @@ describe("shellEncode", function () {
     });
 
     describe("cmd shell", function () {
-        describe("without expansion", function () {
+        describe("with expansion", function () {
             let opts = {
                 shell: "cmd",
-                expansion: false,
+                expansion: true,
             };
 
             describe("strings as arguments", function () {
@@ -237,6 +237,7 @@ describe("shellEncode", function () {
         describe("cmd to powershell", function () {
             let cmdOpts = {
                 shell: "cmd",
+                expansion: true,
             };
             let powershellOpts = {
                 shell: "powershell",
@@ -258,6 +259,7 @@ describe("shellEncode", function () {
         describe("cmd to powershell with inline options", function () {
             let cmdOpts = {
                 shell: "cmd",
+                expansion: true,
             };
             let powershellOpts = {
                 shell: "powershell",
@@ -313,6 +315,7 @@ describe("shellEncode", function () {
         describe("cmd to powershell to cmd", function () {
             let cmdOpts = {
                 shell: "cmd",
+                expansion: true,
             };
             let powershellOpts = {
                 shell: "powershell",

@@ -199,9 +199,9 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             break;
         case "cmd":
             // Reference: https://ss64.com/nt/syntax-esc.html
-            if (expansion) {
+            if (!expansion) {
                 // TODO: Escape delimiters with ^
-                throw new Error("Expansion in CMD is not supported yet");
+                throw new Error("Escaping in CMD is not supported yet");
             }
             encloseString = '"';
             escapeString = '"';
