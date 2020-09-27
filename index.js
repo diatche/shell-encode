@@ -38,6 +38,14 @@ var _defaults = {
 };
 
 /**
+ * Return the current default shell options.
+ * @returns {IShellOptions}
+ */
+function getDefaults() {
+    return _defaults;
+}
+
+/**
  * Sets the default shell options.
  * @param {IShellOptions} options
  */
@@ -268,9 +276,6 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     return escapedCmds;
 }
 
-/**
- * Sets the default shell.
- * @param shell
- */
+shellEncode.getDefaults = getDefaults;
 shellEncode.setDefaults = setDefaults;
 module.exports = shellEncode;
