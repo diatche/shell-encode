@@ -26,6 +26,18 @@ describe('shellEncode (cmd)', () => {
             let res = shell.exec(cmd);
             expect(res.clean.stdout).toBe('%OS%');
         });
+
+        it("should encode a command with nested level 2", function () {
+            let cmd = shellEncode("echo", ["echo", ["echo", ['123']]]);
+            let res = shell.exec(cmd);
+            expect(res.clean.stdout).toBe('echo echo^ 123');
+        });
+
+        it("should encode a piped command", function () {
+            let cmd = shellEncode("break", "|", ["echo", ["%OS%"]]);
+            let res = shell.exec(cmd);
+            expect(res.clean.stdout).toBe('%OS%');
+        });
     });
 
     describe("with expansion", function () {
@@ -43,7 +55,13 @@ describe('shellEncode (cmd)', () => {
         });
 
         it("should encode a command with nested level 1", function () {
-            let cmd = shellEncode("cmd", "/c", ["echo", ["%OS%"]]);
+            let cmd = shellEncode("cmd", "/c", ["echo", ["%OS%", "%OS%"]]);
+            let res = shell.exec(cmd);
+            expect(res.clean.stdout).toBe('Windows_NT Windows_NT');
+        });
+
+        it("should encode a piped command", function () {
+            let cmd = shellEncode("break", "|", ["echo", ["%OS%"]]);
             let res = shell.exec(cmd);
             expect(res.clean.stdout).toBe('Windows_NT');
         });

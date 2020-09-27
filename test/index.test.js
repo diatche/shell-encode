@@ -149,14 +149,14 @@ describe("shellEncode", function () {
 
             describe("string in an array", function () {
                 it("should return the same string joined with a space and enclosed with quotes", function () {
-                    shellEncode(["foo", "bar"], opts).should.equal('"foo bar"');
+                    shellEncode(["foo", "bar"], opts).should.equal('foo^ bar');
                 });
             });
 
             describe("mixed strings and array arguments", function () {
                 it("should enclose only array arguments", function () {
                     shellEncode("foo", ["bar", "wat"], opts).should.equal(
-                        'foo "bar wat"'
+                        'foo bar^ wat'
                     );
                 });
             });
@@ -164,7 +164,7 @@ describe("shellEncode", function () {
             describe("single nested array", function () {
                 it("should escape quotes", function () {
                     shellEncode(["foo", ["bar", "wat"]], opts).should.equal(
-                        '"foo ""bar wat"""'
+                        'foo^ bar^^^ wat'
                     );
                 });
             });
@@ -172,7 +172,7 @@ describe("shellEncode", function () {
             describe("double nested arrays", function () {
                 it("should escape quotes", function () {
                     shellEncode(["foo", ["bar", ["wat"]]], opts).should.equal(
-                        '"foo ""bar """"wat"""""""'
+                        'foo^^ bar^^^ wat'
                     );
                 });
             });
@@ -237,7 +237,7 @@ describe("shellEncode", function () {
         describe("cmd to powershell", function () {
             let cmdOpts = {
                 shell: "cmd",
-                expansion: true,
+                expansion: false,
             };
             let powershellOpts = {
                 shell: "powershell",

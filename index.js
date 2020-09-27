@@ -200,6 +200,18 @@ function _encode(cmds, outerOptions, skipOneLevel) {
         case "cmd":
             // Reference: https://ss64.com/nt/syntax-esc.html
             
+            // encloseString = '"';
+            // escapeString = '^';
+            // stringsToEscape = ['\r\n', '\n'];
+            // replacements = {
+            //     '"': '""', // Double up quotes to escape inside quotes
+            // };
+            // if (!expansion) {
+            //     Object.assign(replacements, {
+            //         '%': '%%', // Double percent to escape inside quotes
+            //     });
+            // }
+
             // Avoid enclosing in quotes as this potentially
             // adds quotes to the passed argument, which then
             // need to be dequoted.
@@ -208,12 +220,11 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             stringsToEscape = [' ', ',', ';', '=', '\t', '\r\n', '\n'];
             if (!expansion) {
                 stringsToEscape = stringsToEscape.concat([
-                    '\\', '&', '<', '>', '^', '|',
+                    '\\', '&', '<', '>', '^', '|', '%',
                     '(', ')'
                 ]);
                 replacements = {
-                    '%': '%%',
-                    '!': '^^!', // Escape delayed expansion
+                    // '!': '^^!', // Escape delayed expansion
                 };
             }
             break;
