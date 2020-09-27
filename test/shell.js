@@ -1,8 +1,7 @@
 const childProcess = require("child_process");
-const path = require("path");
 const _ = require("lodash");
+const { getDefaults } = require("..");
 
-const kDefaultShell = "bash";
 const kShellCommandKey = {
     bash: "-c",
     cmd: "/c",
@@ -60,12 +59,12 @@ function cleanCmd(cmd) {
 
 function spawn(cmd, options) {
     options = typeof options === "object" ? Object.assign({}, options) : {};
-    options.shell = options.shell || kDefaultShell;
+    options.shell = options.shell || getDefaults().shell;
     options.encoding = options.encoding || "utf8";
 
     cmd = cleanCmd(cmd);
 
-    var shell = options.shell || kDefaultShell;
+    var shell = options.shell;
     if (options.shell) {
         shell = options.shell;
         delete options.shell;
@@ -84,7 +83,7 @@ function spawn(cmd, options) {
 
     var result = childProcess.spawnSync(shell, cmd, options);
     applyUtils(result);
-    if (options.throw && result.clean.stderr) {
+    if (!options.noThrow && result.clean.stderr) {
         throw new Error(result.clean.stderr);
     }
     return result;
