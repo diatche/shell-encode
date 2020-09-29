@@ -1,31 +1,20 @@
-const shellEncode = require("..");
+const shellEncode = require('..');
 
 // Running this command in CMD shows an admin powershell:
 var cmd = shellEncode(
-    "powershell",
-    "-Command",
+    'powershell',
+    '-Command',
     [
-        "Start-Process",
-        "-Wait",
-        "powershell",
-        [
-            "-ExecutionPolicy",
-            "Bypass",
-            "-NoProfile",
-            "-Command",
-            [
-                "cmd",
-                "/c",
-                ["echo", ["im admin"], "&", "pause", { shell: "cmd" }],
-            ],
-            { expansion: true },
-        ],
-        "-Verb",
-        "RunAs",
-        { shell: "powershell" },
+        'Start-Process',
+        '-Wait',
+        'powershell',
+        ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', 'pause'],
+        '-Verb',
+        'RunAs',
+        { shell: 'powershell' },
     ],
-    { shell: "cmd" }
+    { shell: 'cmd' }
 );
 console.log(cmd);
 // Output:
-// powershell -Command "Start-Process -Wait powershell '-ExecutionPolicy Bypass -NoProfile -Command ""cmd /c ''echo `""im admin`"" & pause''""' -Verb RunAs"
+// powershell -Command Start-Process^ -Wait^ powershell^ '-ExecutionPolicy^ Bypass^ -NoProfile^ -Command^ pause'^ -Verb^ RunAs

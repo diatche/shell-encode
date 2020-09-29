@@ -6,6 +6,9 @@
 /**
  * Shell options.
  * 
+ * The `program` refers to the script or executable
+ * being run.
+ * 
  * ### Expansion
  * 
  * When `expansion` is `true`, uses double
@@ -20,6 +23,7 @@
  * 
  * @typedef {{
  *     shell: ShellType,
+ *     program: string,
  *     expansion?: boolean,
  * }} IShellOptions
  */
@@ -118,22 +122,12 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     inlineOptions = inlineOptions || {};
     var newCmds = cmds;
     var enclose = false;
+    var program = options.program || '';
 
     if (newCmds && newCmds instanceof Array) {
         var innerShell = options.shell;
         if (inlineOptions && inlineOptions.shell) {
             innerShell = inlineOptions.shell;
-        } else if (newCmds.length > 2) {
-            // Detect inner shell
-            switch (newCmds[0]) {
-                case "bash":
-                case "cmd":
-                case "powershell":
-                    innerShell = newCmds[0];
-                    break;
-                default:
-                    break;
-            }
         }
         if (innerShell === options.shell) {
             inlineOptions = {
@@ -141,16 +135,30 @@ function _encode(cmds, outerOptions, skipOneLevel) {
                 ...inlineOptions,
                 shell: innerShell,
             };
+            if (program) {
+                inlineOptions.program = program;
+            }
         }
 
         newCmds = newCmds
-            .map((cmd) => {
-                if (!(typeof cmd === "object" && cmd instanceof Array)) {
-                    return cmd;
+            .map((cmd, i) => {
+                if (typeof cmd === "object" && cmd instanceof Array) {
+                    cmd = _encode(cmd, inlineOptions);
                 }
-                return _encode(cmd, inlineOptions);
-            })
-            .join(" ");
+                if (i === 0 && !program) {
+                    program = cmd;
+                    inlineOptions.program = program;
+                }
+                return cmd;
+            });
+        
+        if (options.shell === 'cmd' && newCmds.length === 2 && newCmds[0] === 'echo' && !newCmds[1]) {
+            // Special case: echo empty line.
+            // Reference: https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/echo
+            newCmds = 'echo.';
+        } else {
+            newCmds = newCmds.join(" ");
+        }
 
         if (skipOneLevel) {
             return newCmds;
@@ -162,6 +170,8 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     }
 
     var encloseString = "";
+    var encloseStartString = "";
+    var encloseEndString = "";
     var escapeString = "";
     var stringsToEscape = [];
     var invalidStrings = [];
@@ -200,33 +210,43 @@ function _encode(cmds, outerOptions, skipOneLevel) {
         case "cmd":
             // Reference: https://ss64.com/nt/syntax-esc.html
             
-            // encloseString = '"';
-            // escapeString = '^';
-            // stringsToEscape = ['\r\n', '\n'];
-            // replacements = {
-            //     '"': '""', // Double up quotes to escape inside quotes
-            // };
-            // if (!expansion) {
-            //     Object.assign(replacements, {
-            //         '%': '%%', // Double percent to escape inside quotes
-            //     });
+            // if (newCmds.indexOf('"') >= 0) {
+            //     // Double quotes present, keep using double quotes
+            //     encloseString = '"';
+            //     escapeString = '^';
+            //     stringsToEscape = ['\r\n', '\n'];
+            //     replacements = {
+            //         '"': '"""', // Double up quotes to escape inside quotes
+            //     };
+            //     if (!expansion) {
+            //         Object.assign(replacements, {
+            //             '%': '%%', // Double percent to escape inside quotes
+            //         });
+            //     }
+            // } else {
+            
+                // No double quotes present.
+                // Avoid enclosing in quotes as this potentially
+                // adds quotes to the passed argument, which then
+                // need to be dequoted.
+                escapeString = '^';
+                stringsToEscape = [
+                    ' ', ',', ';', '=', '\t', '\r\n', '\n'
+                    // ,'(', ')'
+                ];
+                if (program !== 'echo') {
+                    replacements = {
+                        '"': '\\^"',
+                    };
+                }
+                if (!expansion) {
+                    stringsToEscape = stringsToEscape.concat([
+                        '\\', '&', '<', '>', '^', '|', '%', '!'
+                        ,'(', ')'
+                    ]);
+                    replacements['!'] = '^^!'; // Escape delayed expansion
+                }
             // }
-
-            // Avoid enclosing in quotes as this potentially
-            // adds quotes to the passed argument, which then
-            // need to be dequoted.
-            encloseString = '';
-            escapeString = '^';
-            stringsToEscape = [' ', ',', ';', '=', '\t', '\r\n', '\n'];
-            if (!expansion) {
-                stringsToEscape = stringsToEscape.concat([
-                    '\\', '&', '<', '>', '^', '|', '%',
-                    '(', ')'
-                ]);
-                replacements = {
-                    // '!': '^^!', // Escape delayed expansion
-                };
-            }
             break;
         case "powershell":
             // References:
@@ -252,6 +272,15 @@ function _encode(cmds, outerOptions, skipOneLevel) {
         default:
             throw new Error("Unsupported shell: " + options.shell);
     }
+    if (encloseString) {
+        if (!encloseStartString) {
+            encloseStartString = encloseString;
+        }
+        if (!encloseEndString) {
+            encloseEndString = encloseString;
+        }
+    }
+
     var allReplacements = {};
     invalidStrings.forEach((invalidString) => {
         if (newCmds.indexOf(invalidString) >= 0) {
@@ -291,7 +320,7 @@ function _encode(cmds, outerOptions, skipOneLevel) {
     }
 
     if (enclose) {
-        escapedCmds = encloseString + escapedCmds + encloseString;
+        escapedCmds = encloseStartString + escapedCmds + encloseEndString;
     }
 
     return escapedCmds;
