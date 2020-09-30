@@ -52,7 +52,7 @@ For example:
 ```javascript
 var cmd = shellEncode('echo', ['Hello "World"!'], { shell: 'cmd' });
 console.log(cmd);
-// Output: echo "Hello ""World""!"
+// Output: echo Hello^ \"World\"^!
 ```
 
 ### Nested Arguments
@@ -85,7 +85,7 @@ var cmd = shellEncode(
         'Write-Output', ['Hello World!'], { shell: 'powershell' }
     ], { shell: 'cmd' });
 console.log(cmd);
-// Output: powershell "Write-Output 'Hello World!'"
+// Output: powershell Write-Output^ 'Hello^ World^!'
 ```
 
 ### Changing the Default Shell
@@ -95,3 +95,14 @@ shellEncode.setDefaults('powershell');
 ```
 
 Also have a look at the [examples folder](examples/).
+
+### Shell Specific Notes
+
+#### CMD
+
+- New lines are not supported.
+- You need to wrap each pipe in an array as CMD escapes the line multiple times. For example, if there is a single pipe, CMD will escape commands before the pipe once and will escape commands after the pipe twice.
+
+#### PowerShell
+
+- New lines are not supported.

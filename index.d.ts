@@ -8,6 +8,9 @@ export const ShellType = 'bash' | 'powershell' | 'cmd';
 /**
  * Shell options.
  * 
+ * The `program` refers to the script or executable
+ * being run.
+ * 
  * ### Expansion
  * 
  * When `expansion` is `true`, uses double
@@ -22,6 +25,7 @@ export const ShellType = 'bash' | 'powershell' | 'cmd';
  */
 export interface IShellOptions {
     shell: ShellType;
+    program: string;
     expansion?: boolean;
 }
 

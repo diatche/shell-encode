@@ -7,13 +7,19 @@ Changes on `master` that have not been published will be listed here.
 ### Bug Fixes
 
 - Fixed a bug that ignored all shell options except for the shell in `setDefaults()`.
+- Fixed CMD encoding.
+
+### Breaking Changes
+
+- Removed buggy shell detection.
 
 ## 0.2.0
 22 Sep 2020
 
 ### Features
 
-- Expansion is now optional and is off by default.
+- Expansion is now optional.
+- Inline options can be passed in nested arrays.
 - Add shell default options with `setDefaults()`.
 
 ### Breaking Changes

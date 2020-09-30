@@ -1,7 +1,7 @@
 const shellEncode = require("../..");
 const shell = require('../shell');
 
-describe('shellEncode (bash)', () => {
+describe('shellEncode (powershell)', () => {
 
     beforeEach(() => {
         shellEncode.setDefaults({ shell: 'powershell' });

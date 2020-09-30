@@ -19,6 +19,7 @@ class ChildProcessCleanUtil {
     get stdout() {
         return (this._stdout || this.child.stdout || "")
             .toString()
+            .replace(/\r\n/g, '\n')
             .replace(/^\s+|\s+$/g, "");
     }
     set stdout(value) {
@@ -28,6 +29,7 @@ class ChildProcessCleanUtil {
     get stderr() {
         return (this._stderr || this.child.stderr || "")
             .toString()
+            .replace(/\r\n/g, '\n')
             .replace(/^\s+|\s+$/g, "");
     }
     set stderr(value) {
