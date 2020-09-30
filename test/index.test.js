@@ -164,7 +164,7 @@ describe('shellEncode', function () {
             describe('single nested array', function () {
                 it('should escape quotes', function () {
                     shellEncode(['foo', ['bar', 'wat']], opts).should.equal(
-                        'foo^ bar^^^ wat'
+                        'foo^ bar^^ wat'
                     );
                 });
             });
@@ -172,7 +172,7 @@ describe('shellEncode', function () {
             describe('double nested arrays', function () {
                 it('should escape quotes', function () {
                     shellEncode(['foo', ['bar', ['wat']]], opts).should.equal(
-                        'foo^^ bar^^^ wat'
+                        'foo^ bar^^ wat'
                     );
                 });
             });
@@ -285,7 +285,7 @@ describe('shellEncode', function () {
                     ['echo', ['1 2 3'], ';', 'echo', ['4 5 6'], powershellOpts],
                     cmdOpts
                 ).should.equal(
-                    'powershell -Command echo^ \\^"1^ 2^ 3\\^"^ ^;^ echo^ \\^"4^ 5^ 6\\^"'
+                    'powershell -Command echo^ \\^"1^ 2^ 3\\^"^;^ echo^ \\^"4^ 5^ 6\\^"'
                 );
             });
         });
@@ -334,7 +334,7 @@ describe('shellEncode', function () {
                         'Bypass',
                         '-NoProfile',
                         '-Command',
-                        'pause'
+                        'pause',
                     ],
                     '-Verb',
                     'RunAs',

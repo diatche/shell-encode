@@ -54,4 +54,48 @@ describe('shellEncode (cmd & powershell)', () => {
         console.debug('stdout: ' + res.clean.stdout);
         expect(res.clean.stdout).toBe('1 2 3\n4 5 6');
     });
+
+    it('should allow CMD (literal) to PowerShell (literal) to CMD (expansion)', function () {
+        let cmd = shellEncode(
+            'powershell',
+            [
+                // 'Set-PSDebug -Trace 1;',
+                'cmd',
+                '/c',
+                [
+                    'echo',
+                    '%OS%',
+                    { shell: 'cmd', expansion: true }
+                ],
+                { shell: 'powershell' },
+            ],
+            { shell: 'cmd' }
+        );
+        console.debug('cmd: ' + cmd);
+        let res = shell.exec(cmd, { shell: 'cmd' });
+        console.debug('stdout: ' + res.clean.stdout);
+        expect(res.clean.stdout).toBe('Windows_NT');
+    });
+
+    it('should allow CMD (expansion) to PowerShell (expansion) to CMD (literal)', function () {
+        let cmd = shellEncode(
+            'powershell',
+            [
+                // 'Set-PSDebug -Trace 1;',
+                'cmd',
+                '/c',
+                [
+                    'echo',
+                    '%OS%',
+                    { shell: 'cmd', expansion: false }
+                ],
+                { shell: 'powershell', expansion: true },
+            ],
+            { shell: 'cmd', expansion: true }
+        );
+        console.debug('cmd: ' + cmd);
+        let res = shell.exec(cmd, { shell: 'cmd' });
+        console.debug('stdout: ' + res.clean.stdout);
+        expect(res.clean.stdout).toBe('Windows_NT');
+    });
 });

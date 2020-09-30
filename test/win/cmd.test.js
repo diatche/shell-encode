@@ -44,10 +44,28 @@ describe('shellEncode (cmd)', () => {
             expect(res.clean.stdout).toBe('"red" apple');
         });
 
-        it('should encode a command with new lines', function () {
-            let cmd = shellEncode('echo', ['123\r\n345']);
+        it('should encode a command with tabs', function () {
+            let cmd = shellEncode('echo', ['123\t345']);
+            let res = shell.exec(cmd);
+            expect(res.clean.stdout).toBe('123\t345');
+        });
+
+        it.skip('should encode a command with new lines', function () {
+            let cmd = shellEncode('echo', ['123\n345']);
             let res = shell.exec(cmd);
             expect(res.clean.stdout).toBe('123\n345');
+        });
+
+        it('should encode a command with round brackets without expansion', function () {
+            let cmd = shellEncode('echo', ['(123)'], { expansion: false });
+            let res = shell.exec(cmd);
+            expect(res.clean.stdout).toBe('(123)');
+        });
+
+        it('should encode a command with round brackets with expansion', function () {
+            let cmd = shellEncode('echo', ['(123)'], { expansion: true });
+            let res = shell.exec(cmd);
+            expect(res.clean.stdout).toBe('(123)');
         });
 
         it('should encode a command with nested level 1', function () {
@@ -84,15 +102,21 @@ describe('shellEncode (cmd)', () => {
         });
 
         it('should encode a command with nested level 1', function () {
-            let cmd = shellEncode('cmd', '/c', ['echo', ['%OS%', '%OS%']]);
+            let cmd = shellEncode(
+                'cmd',
+                '/c',
+                [
+                    'echo',
+                    ['%OS%', '%OS%'],
+                    '&',
+                    'echo',
+                    '123',
+                    { expansion: true },
+                ],
+                { expansion: false }
+            );
             let res = shell.exec(cmd);
-            expect(res.clean.stdout).toBe('Windows_NT Windows_NT');
-        });
-
-        it('should encode a command with nested delayed expansion', function () {
-            let cmd = shellEncode('cmd', '/c', ['echo', ['%OS%', '%OS%']]);
-            let res = shell.exec(cmd);
-            expect(res.clean.stdout).toBe('Windows_NT Windows_NT');
+            expect(res.clean.stdout).toBe('Windows_NT Windows_NT\n123');
         });
 
         it('should encode a piped command', function () {

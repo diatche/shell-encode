@@ -8,7 +8,7 @@ describe('readme', () => {
         });
         it('should show correct output with CMD shell', () => {
             var cmd = shellEncode('echo', ['Hello "World"!'], { shell: 'cmd' });
-            expect(cmd).toBe('echo "Hello ""World""!"');
+            expect(cmd).toBe('echo Hello^ \"World\"^!');
         });
     });
 
@@ -25,7 +25,7 @@ describe('readme', () => {
             'powershell', [
                 'Write-Output', ['Hello World!'], { shell: 'powershell' }
             ], { shell: 'cmd' });
-            expect(cmd).toBe('powershell "Write-Output \'Hello World!\'"');
+            expect(cmd).toBe("powershell Write-Output^ 'Hello^ World^!'");
         })
     });
 });

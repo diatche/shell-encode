@@ -152,10 +152,24 @@ function _encode(cmds, outerOptions, skipOneLevel) {
                 return cmd;
             });
         
-        if (options.shell === 'cmd' && newCmds.length === 2 && newCmds[0] === 'echo' && !newCmds[1]) {
-            // Special case: echo empty line.
-            // Reference: https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/echo
-            newCmds = 'echo.';
+        if (options.shell === 'cmd') {
+            // echo in CMD needs special treatment
+            if (newCmds.length === 2 && !newCmds[1]) {
+                // Special case: echo empty line.
+                // Reference: https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/echo
+                newCmds = 'echo.';
+            } else {
+                let joinedCmds = newCmds.slice(0, 2).join(' ');
+                let cmd = '';
+                for (let i = 2; i < newCmds.length; i++) {
+                    cmd = newCmds[i];
+                    if (newCmds[i - 2] !== 'echo') {
+                        joinedCmds += ' ';
+                    } // Else: avoid trailing space in output
+                    joinedCmds += cmd;
+                }
+                newCmds = joinedCmds;
+            }
         } else {
             newCmds = newCmds.join(" ");
         }
@@ -210,8 +224,25 @@ function _encode(cmds, outerOptions, skipOneLevel) {
         case "cmd":
             // Reference: https://ss64.com/nt/syntax-esc.html
             
-            // if (newCmds.indexOf('"') >= 0) {
-            //     // Double quotes present, keep using double quotes
+            // if (program === 'echo') {
+            //     // echo prints double quotes,
+            //     // escape delimiters instead of wrapping.
+            //     escapeString = '^';
+            //     stringsToEscape = [
+            //         ' ', ',', ';', '=', '\t', '\r', '\n'
+            //     ];
+            //     if (program !== 'echo') {
+            //         replacements['\\^"'] = '\\^"\\^"\\^"';
+            //         replacements['"'] = '\\^"';
+            //     }
+            //     if (!expansion) {
+            //         stringsToEscape = stringsToEscape.concat([
+            //             '\\', '&', '<', '>', '^', '|', '%', '!'
+            //             ,'(', ')'
+            //         ]);
+            //         replacements['!'] = '^^!'; // Escape delayed expansion
+            //     }
+            // } else {
             //     encloseString = '"';
             //     escapeString = '^';
             //     stringsToEscape = ['\r\n', '\n'];
@@ -223,30 +254,29 @@ function _encode(cmds, outerOptions, skipOneLevel) {
             //             '%': '%%', // Double percent to escape inside quotes
             //         });
             //     }
-            // } else {
-            
-                // No double quotes present.
-                // Avoid enclosing in quotes as this potentially
-                // adds quotes to the passed argument, which then
-                // need to be dequoted.
-                escapeString = '^';
-                stringsToEscape = [
-                    ' ', ',', ';', '=', '\t', '\r\n', '\n'
-                    // ,'(', ')'
-                ];
-                if (program !== 'echo') {
-                    replacements = {
-                        '"': '\\^"',
-                    };
-                }
-                if (!expansion) {
-                    stringsToEscape = stringsToEscape.concat([
-                        '\\', '&', '<', '>', '^', '|', '%', '!'
-                        ,'(', ')'
-                    ]);
-                    replacements['!'] = '^^!'; // Escape delayed expansion
-                }
             // }
+            
+            // No double quotes present.
+            // Avoid enclosing in quotes as this potentially
+            // adds quotes to the passed argument, which then
+            // need to be dequoted.
+            escapeString = '^';
+            stringsToEscape = [
+                ' ', ',', ';', '=', '\t', '\r', '\n'
+            ];
+            if (program !== 'echo') {
+                // echo prints double quotes,
+                // otherwise, quotes need to be escaped.
+                replacements['\\^"'] = '\\^"\\^"\\^"';
+                replacements['"'] = '\\^"';
+            }
+            if (!expansion) {
+                stringsToEscape = stringsToEscape.concat([
+                    '\\', '&', '<', '>', '^', '|', '%', '!'
+                    ,'(', ')'
+                ]);
+                replacements['!'] = '^^!'; // Escape delayed expansion
+            }
             break;
         case "powershell":
             // References:
