@@ -3,6 +3,8 @@ Escape Bash, PowerShell, CMD and mixed shell CLI commands.
 
 ![Node.js CI](https://github.com/diatche/shell-encode/workflows/Node.js%20CI/badge.svg)
 
+Try it out on [repl.it](https://repl.it/@diatche/shell-encode-example)!
+
 ## Installation
 
 With yarn:
@@ -88,13 +90,13 @@ console.log(cmd);
 // Output: powershell Write-Output^ 'Hello^ World^!'
 ```
 
+Also have a look at the [examples folder](examples/).
+
 ### Changing the Default Shell
 
 ```javascript
 shellEncode.setDefaults('powershell');
 ```
-
-Also have a look at the [examples folder](examples/).
 
 ### Shell Specific Notes
 
