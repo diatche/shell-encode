@@ -2,8 +2,8 @@
 Escape Bash, PowerShell, CMD and mixed shell CLI commands.
 
 ![Node.js CI](https://github.com/diatche/shell-encode/workflows/Node.js%20CI/badge.svg)
-
-Try it out on [repl.it](https://repl.it/@diatche/shell-encode-example)!
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Run on Repl.it](https://repl.it/badge/github/diatche/shell-encode)](https://repl.it/@diatche/shell-encode-example)
 
 ## Installation
 
