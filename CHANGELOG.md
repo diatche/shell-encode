@@ -4,6 +4,9 @@
 
 Changes on `master` that have not been published will be listed here.
 
+## 0.2.1
+10 Oct 2020
+
 ### Bug Fixes
 
 - Fixed a bug that ignored all shell options except for the shell in `setDefaults()`.

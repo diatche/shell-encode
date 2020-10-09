@@ -5,6 +5,8 @@ Escape Bash, PowerShell, CMD and mixed shell CLI commands.
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Run on Repl.it](https://repl.it/badge/github/diatche/shell-encode)](https://repl.it/@diatche/shell-encode-example)
 
+*Note that this package is in early stages of development and there may be breaking changes within semantically compatible versions. See [change log](CHANGELOG.md).*
+
 ## Installation
 
 With yarn:
@@ -102,9 +104,9 @@ shellEncode.setDefaults('powershell');
 
 #### CMD
 
-- New lines are not supported.
+- Multiple lines are merged into a single line.
 - You need to wrap each pipe in an array as CMD escapes the line multiple times. For example, if there is a single pipe, CMD will escape commands before the pipe once and will escape commands after the pipe twice.
 
 #### PowerShell
 
-- New lines are not supported.
+- Multiple lines are merged into a single line.

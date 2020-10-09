@@ -1,6 +1,6 @@
 {
     "name": "shell-encode",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Escape Bash, PowerShell, CMD and mixed shell CLI commands",
     "main": "index.js",
     "types": "index.d.ts",
